@@ -1,0 +1,299 @@
+{% extends "base.html" %}
+
+{% block extra_head %}
+<style>
+  #stripeBtnLabel {
+    font-family: "Helvetica Neue", Helvetica, sans-serif;
+    font-size: 16px;
+    font-variant: normal;
+    padding: 0;
+    margin: 0;
+    -webkit-font-smoothing: antialiased;
+    font-weight: 500;
+    display: block;
+  }
+
+  #stripeBtn {
+    border: none;
+    border-radius: 4px;
+    outline: none;
+    text-decoration: none;
+    color: #fff;
+    background: #32325d;
+    white-space: nowrap;
+    display: inline-block;
+    height: 40px;
+    line-height: 40px;
+    box-shadow: 0 4px 6px rgba(50, 50, 93, .11), 0 1px 3px rgba(0, 0, 0, .08);
+    border-radius: 4px;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.025em;
+    text-decoration: none;
+    -webkit-transition: all 150ms ease;
+    transition: all 150ms ease;
+    width: 100%
+  }
+
+  button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 7px 14px rgba(50, 50, 93, .10), 0 3px 6px rgba(0, 0, 0, .08);
+    background-color: #43458b;
+  }
+
+  .stripe-form {
+    padding: 5px 30px;
+  }
+
+  #card-errors {
+    height: 20px;
+    padding: 4px 0;
+    color: #fa755a;
+  }
+
+  .stripe-form-row {
+    width: 100%;
+    float: left;
+    margin-top: 5px;
+    margin-bottom: 5px;
+  }
+
+  /**
+ * The CSS shown here will not be introduced in the Quickstart guide, but shows
+ * how you can use CSS to style your Element's container.
+ */
+  .StripeElement {
+    box-sizing: border-box;
+
+    height: 40px;
+
+    padding: 10px 12px;
+
+    border: 1px solid transparent;
+    border-radius: 4px;
+    background-color: white;
+
+    box-shadow: 0 1px 3px 0 #e6ebf1;
+    -webkit-transition: box-shadow 150ms ease;
+    transition: box-shadow 150ms ease;
+  }
+
+  .StripeElement--focus {
+    box-shadow: 0 1px 3px 0 #cfd7df;
+  }
+
+  .StripeElement--invalid {
+    border-color: #fa755a;
+  }
+
+  .StripeElement--webkit-autofill {
+    background-color: #fefde5 !important;
+  }
+
+  .current-card-form {
+    display: none;
+  }
+</style>
+{% endblock extra_head %}
+
+{% block content %}
+
+<main>
+  <div class="container wow fadeIn">
+
+    <h2 class="my-5 h2 text-center">Payment</h2>
+
+    <div class="row">
+
+      <div class="col-md-12 mb-4">
+        <div class="card">
+
+          {% if card %}
+          <div style="padding: 5px 30px;">
+            <div class="custom-control custom-checkbox">
+              <input type="checkbox" class="custom-control-input" name="use_default_card" id="use_default_card">
+              <label class="custom-control-label" for="use_default_card">Use default card:
+                **** **** **** {{ card.last4 }}
+                <span>Exp: {{ card.exp_month }}/{{ card.exp_year }}</span></label>
+            </div>
+          </div>
+          {% endif %}
+
+          <div class="current-card-form">
+            <form action="." method="post" class="stripe-form">
+              {% csrf_token %}
+              <input type="hidden" name="use_default" value="true">
+              <div class="stripe-form-row">
+                <button id="stripeBtn">Submit Payment</button>
+              </div>
+              <div id="card-errors" role="alert"></div>
+            </form>
+          </div>
+
+          <div class="new-card-form">
+            <form action="." method="post" class="stripe-form" id="stripe-form">
+              {% csrf_token %}
+              <div class="stripe-form-row" id="creditCard">
+                <label for="card-element" id="stripeBtnLabel">
+                  Credit or debit card
+                </label>
+                <div class="p-CardNumberInput">
+                  <div class="p-Input"><input dir="ltr" type="text" inputmode="numeric" name="number"
+                      id="Field-numberInput" placeholder="1234 1234 1234 1234" autocomplete="billing cc-number"
+                      aria-invalid="false" aria-required="true"
+                      class="p-Input-input Input p-CardNumberInput-input Input--empty p-Input-input--textRight" value=""
+                      style="padding-right: 51.2px;"></div>
+                  <div class="p-CardIcons Input">
+                    <div style="position: relative;">
+                      <div class="p-CardBrandIcons p-CardBrandIcons--loaded">
+                        <div class="p-CardBrandIcons-item p-CardBrandIcons-more"><img
+                            class="p-CardBrandIcon p-CardBrandIcon--visible" role="presentation"
+                            src="https://js.stripe.com/v3/fingerprinted/img/visa-729c05c240c4bdb47b03ac81d9945bfe.svg"
+                            focusable="false"><img class="p-CardBrandIcon" role="presentation"
+                            src="https://js.stripe.com/v3/fingerprinted/img/mastercard-4d8844094130711885b5e41b28c9848f.svg"
+                            focusable="false"><img class="p-CardBrandIcon" role="presentation"
+                            src="https://js.stripe.com/v3/fingerprinted/img/amex-a49b82f46c5cd6a96a6e418a6ca1717c.svg"
+                            focusable="false"><img class="p-CardBrandIcon" role="presentation"
+                            src="https://js.stripe.com/v3/fingerprinted/img/discover-ac52cd46f89fa40a29a0bfb954e33173.svg"
+                            focusable="false"><img class="p-CardBrandIcon" role="presentation"
+                            src="https://js.stripe.com/v3/fingerprinted/img/diners-fbcbd3360f8e3f629cdaa80e93abdb8b.svg"
+                            focusable="false"><img class="p-CardBrandIcon" role="presentation"
+                            src="https://js.stripe.com/v3/fingerprinted/img/jcb-271fd06e6e7a2c52692ffa91a95fb64f.svg"
+                            focusable="false"><img class="p-CardBrandIcon" role="presentation"
+                            src="https://js.stripe.com/v3/fingerprinted/img/unionpay-8a10aefc7295216c338ba4e1224627a1.svg"
+                            focusable="false"><img class="p-CardBrandIcon" role="presentation"
+                            src="https://js.stripe.com/v3/fingerprinted/img/elo-efe873e884e6c9eb817f23a120caaa3e.svg"
+                            focusable="false"></div>
+                      </div>
+                      <div class="p-CardKnownIcon"></div>
+                      <div class="p-CardErrorIcon"><svg width="24" height="24" viewBox="0 0 24 24"
+                          xmlns="http://www.w3.org/2000/svg" fill="var(--colorIconCardError)" role="presentation">
+                          <path opacity=".4" fill-rule="evenodd" clip-rule="evenodd"
+                            d="M15.337 4A5.5 5.5 0 1023 11.663V18a2 2 0 01-2 2H3a2 2 0 01-2-2V6a2 2 0 012-2h12.337zm6.707.293c.239.202.46.424.662.663a2.01 2.01 0 00-.662-.663zM3 9a1 1 0 011-1h5a1 1 0 011 1v3a1 1 0 01-1 1H4a1 1 0 01-1-1V9z">
+                          </path>
+                          <path opacity=".6" fill-rule="evenodd" clip-rule="evenodd"
+                            d="M4 15a1 1 0 100 2h1.5a1 1 0 100-2H4zm4.8 0a1 1 0 100 2h1.5a1 1 0 100-2H8.8zm3.8 1a1 1 0 011-1h1.5a1 1 0 110 2h-1.5a1 1 0 01-1-1zm5.9-1a1 1 0 100 2H20a1 1 0 100-2h-1.5z">
+                          </path>
+                          <path fill-rule="evenodd" clip-rule="evenodd"
+                            d="M18.5 14a5.5 5.5 0 110-11 5.5 5.5 0 010 11zm0-1.719a1.031 1.031 0 100-2.062 1.031 1.031 0 000 2.062zm0-7.906a.687.687 0 00-.688.688V8.5a.687.687 0 101.375 0V5.062a.687.687 0 00-.687-.687z">
+                          </path>
+                        </svg></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="stripe-form-row">
+                <button id="stripeBtn">Submit Payment</button>
+              </div>
+              <div class="stripe-form-row">
+                <div class="custom-control custom-checkbox">
+                  <input type="checkbox" class="custom-control-input" name="save" id="save_card_info">
+                  <label class="custom-control-label" for="save_card_info">Save for future purchases</label>
+                </div>
+              </div>
+              <div id="card-errors" role="alert"></div>
+            </form>
+          </div>
+
+        </div>
+      </div>
+
+      {% include "order_snippet.html" %}
+
+    </div>
+
+  </div>
+</main>
+
+{% endblock content %}
+
+{% block extra_scripts %}
+
+<script src="https://js.stripe.com/v3/"></script>
+<script nonce="">  // Create a Stripe client.
+  var stripe = Stripe('{{STRIPE_PUBLIC_KEY}}');
+
+  // Create an instance of Elements.
+  var elements = stripe.elements();
+
+  // Custom styling can be passed to options when creating an Element.
+  // (Note that this demo uses a wider set of styles than the guide below.)
+  var style = {
+    base: {
+      color: '#32325d',
+      fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
+      fontSmoothing: 'antialiased',
+      fontSize: '16px',
+      '::placeholder': {
+        color: '#aab7c4'
+      }
+    },
+    invalid: {
+      color: '#fa755a',
+      iconColor: '#fa755a'
+    }
+  };
+
+  // Create an instance of the card Element.
+  var card = elements.create('card', { style: style });
+
+  // Add an instance of the card Element into the `card-element` <div>.
+  card.mount('#card-element');
+
+  // Handle real-time validation errors from the card Element.
+  card.addEventListener('change', function (event) {
+    var displayError = document.getElementById('card-errors');
+    if (event.error) {
+      displayError.textContent = event.error.message;
+    } else {
+      displayError.textContent = '';
+    }
+  });
+
+  // Handle form submission.
+  var form = document.getElementById('stripe-form');
+  form.addEventListener('submit', function (event) {
+    event.preventDefault();
+
+    stripe.createToken(card).then(function (result) {
+      if (result.error) {
+        // Inform the user if there was an error.
+        var errorElement = document.getElementById('card-errors');
+        errorElement.textContent = result.error.message;
+      } else {
+        // Send the token to your server.
+        stripeTokenHandler(result.token);
+      }
+    });
+  });
+
+  // Submit the form with the token ID.
+  function stripeTokenHandler(token) {
+    // Insert the token ID into the form so it gets submitted to the server
+    var form = document.getElementById('stripe-form');
+    var hiddenInput = document.createElement('input');
+    hiddenInput.setAttribute('type', 'hidden');
+    hiddenInput.setAttribute('name', 'stripeToken');
+    hiddenInput.setAttribute('value', token.id);
+    form.appendChild(hiddenInput);
+
+    // Submit the form
+    form.submit();
+  }
+
+  var currentCardForm = $('.current-card-form');
+  var newCardForm = $('.new-card-form');
+  var use_default_card = document.querySelector("input[name=use_default_card]");
+  use_default_card.addEventListener('change', function () {
+    if (this.checked) {
+      newCardForm.hide();
+      currentCardForm.show()
+    } else {
+      newCardForm.show();
+      currentCardForm.hide()
+    }
+  })
+
+</script>
+
+{% endblock extra_scripts %}
