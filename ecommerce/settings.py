@@ -17,8 +17,6 @@ from decouple import config
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-STRIPE_SECRET_KEY = 'sk_test_26PHem9AhJZvU623DfE1x4sd'	
-STRIPE_PUBLIC_KEY = 'pk_test_qblFNYngBkEdjEZ16jxxoWSM'
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
